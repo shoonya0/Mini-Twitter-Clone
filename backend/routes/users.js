@@ -56,6 +56,7 @@ router.delete("/:id", verifyToken, async (req, res, next) => {
         try{
             // here we are deleting the user by id
             await User.findByIdAndDelete(req.params.id);
+
             // here we are deleting the tweets of the user by userId
             await Tweet.deleteOne({userId: req.params.id});
             res.status(200).json("User has been deleted...");
@@ -64,6 +65,40 @@ router.delete("/:id", verifyToken, async (req, res, next) => {
         }
     }else{
         return next(handleError(403, "You can delete only your account!"));
+    }
+});
+
+// // Follow
+router.put("/follow/:id", verifyToken, async (req ,res, next) => {
+    try{
+        // first user
+        const firstUser = await User.findById(req.params.id);
+        // second user
+        const secondUser = await User.findById(req.body.id);
+
+        // if the first user does not follow the second user
+        if(!firstUser.followers.includes(req.body.id)){
+            // here we are updating the first user by pushing the second user id to the followers array
+            await firstUser.updateOne({
+                $push: {
+                    followers : req.body.id
+                },
+            });
+
+            // here we are updating the second user by pushing the first user id to the following array
+            await secondUser.updateOne({
+                $push : {
+                    following : req.params.id
+                },
+            });
+
+            // here we are sending the response to the client that the user has been followed
+            res.status(200).json("User has been followed...");
+        }else{
+            res.status(403).json("You already follow this user...");
+        }
+    }catch(err){
+        next(err);
     }
 });
 

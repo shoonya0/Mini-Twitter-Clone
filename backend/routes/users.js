@@ -1,4 +1,5 @@
 const express = require('express');
+const createError = require('http-errors');
 const handleError = require('../middleware/error');
 const User = require('../dataModels/User');
 
@@ -16,6 +17,29 @@ router.get("/find/:id", async (req, res, next) => {
         res.status(200).json(user);
     }catch (err) {
         next(err);
+    }
+});
+
+
+// Update User
+router.put("/:id", async (req, res, next) => {
+    if(req.params.id === req.body.id){
+        try{
+            const updateUser = await User.findByIdAndUpdate(
+                req.params.id,
+                {
+                    $set: req.body,
+                },
+                {
+                    new: true
+                }
+            );
+            res.status(200).json(updateUser);
+        }catch(err){
+            next(err);
+        }
+    }else{
+        return next(createError(401, "You can update only your account!"));
     }
 });
 

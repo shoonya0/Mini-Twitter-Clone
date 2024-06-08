@@ -4,6 +4,7 @@
   "description": "mini twitter clone",
   "main": "app.js",
   "scripts": {
+    "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Krishan Singh",
@@ -15,5 +16,8 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.4.1"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.5"
   }
 }

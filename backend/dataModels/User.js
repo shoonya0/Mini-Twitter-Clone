@@ -7,8 +7,9 @@ const UserSchema = new mongoose.Schema({
         userName  : { type : String , require : true , unique : true },
         password  : { type : String ,require : true },
         email     : { type : String , require : true , unique : true },
-        followers : [{ type : mongoose.Schema.Types.ObjectId , ref : 'User'}],
-        following : [{ type : mongoose.Schema.Types.ObjectId , ref : 'User'}],
+        followers : [{ type : Array , ref : 'User' , default : []}],
+        following : [{ type : Array , ref : 'User' , default : []}],
+        profilePicture : { type : String , default : "" },
     },{ 
         timestamps : true 
     }

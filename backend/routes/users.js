@@ -56,7 +56,7 @@ router.delete("/:id", verifyToken, async (req, res, next) => {
         try{
             // here we are deleting the user by id
             await User.findByIdAndDelete(req.params.id);
-
+            
             // here we are deleting the tweets of the user by userId
             await Tweet.deleteOne({userId: req.params.id});
             res.status(200).json("User has been deleted...");
@@ -68,7 +68,7 @@ router.delete("/:id", verifyToken, async (req, res, next) => {
     }
 });
 
-// // Follow
+// Follow
 router.put("/follow/:id", verifyToken, async (req ,res, next) => {
     try{
         // first user
@@ -96,6 +96,37 @@ router.put("/follow/:id", verifyToken, async (req ,res, next) => {
             res.status(200).json("User has been followed...");
         }else{
             res.status(403).json("You already follow this user...");
+        }
+    }catch(err){
+        next(err);
+    }
+});
+
+// Unfollow
+router.put("/unfollow/:id", verifyToken, async (req ,res, next) => {
+    try{
+        // first user
+        const firstUser = await User.findById(req.params.id);
+        // second user
+        const secondUser = await User.findById(req.body.id);
+
+        // if the first user follows the second user
+        if(secondUser.following.includes(req.params.id)){
+            // here we are updating the first user by pulling the second user id from the followers array
+            await firstUser.updateOne({
+                $pull: {
+                    followers : req.body.id
+                }
+            });
+            
+            // here we are updating the second user by pulling the first user id from the following array
+            await secondUser.updateOne({
+                $pull: {
+                    following : req.params.id
+                }
+            });
+        }else{
+            res.status(403).json("You don't follow this user...");
         }
     }catch(err){
         next(err);

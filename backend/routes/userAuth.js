@@ -61,14 +61,19 @@ router.post("/signup", async (req , res, next) => {
 // signin
 router.post("/signin", async (req, res, next) => {
     try {
+        // here we are finding the user with the help of the user model
         const user = await User.findOne({ userName : req.body.userName});
 
+        // here we are checking if the user is not found then we are throwing an error
         if(!user) return next(handleError(400, "User not found!"));
 
+        // here we are comparing the password with the help of bcrypt library
         const isCorr = bcrypt.compareSync(req.body.password, user.password);
 
+        // here we are checking if the password is not correct then we are throwing an error
         if(!isCorr) return next(handleError(400, "Invalid credentials!"));
 
+        // here we are creating a token with the help of jwt library
         const token = jwt.sign(
             { id : user._id, userName : user.userName},
             process.env.JWT_SECRET,
@@ -79,8 +84,10 @@ router.post("/signin", async (req, res, next) => {
             }
         );
 
+        // here we are destructuring the password from the user object
         const { password, ...otherData } = user._doc;
 
+        // here we are setting the cookie with the help of res.cookie() method that takes three arguments
         res.cookie("access_token" ,token 
             //     ,{
             //     httpOnly : true ,

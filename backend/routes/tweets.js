@@ -31,4 +31,20 @@ router.delete("/:id", verifyToken, async (req , res , next) => {
     }
 });
 
+// Like or Dislike a Tweet
+router.put("/:id/like", async (req , res , next) => {
+    try{
+        const tweet = await Tweet.findById(req.params.id);
+        if(!tweet.likes.includes(req.body.id)){
+            await tweet.updateOne({ $push : { likes : req.body.id } });
+            res.status(200).json("The tweet has been liked...");
+        }else{
+            await tweet.updateOne({ $pull : { likes : req.body.id } });
+            res.status(200).json("The tweet has been disliked...");
+        }
+    }catch(err){
+        handleError(500 ,err);
+    }
+});
+
 module.exports = router;

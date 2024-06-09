@@ -8,7 +8,7 @@ const User = require('../dataModels/User');
 const router = express.Router();
 
 // signup
-// here we are creating a new useer with the help of the user model
+// here we are creating a new user with the help of the user model
 router.post("/signup", async (req , res, next) => {
     try{
         // here salt is a random string that is used to hash the password
@@ -58,6 +58,39 @@ router.post("/signup", async (req , res, next) => {
 });
 
 
+// signin
+router.post("/signin", async (req, res, next) => {
+    try {
+        const user = await User.findOne({ userName : req.body.userName});
 
+        if(!user) return next(handleError(400, "User not found!"));
+
+        const isCorr = bcrypt.compareSync(req.body.password, user.password);
+
+        if(!isCorr) return next(handleError(400, "Invalid credentials!"));
+
+        const token = jwt.sign(
+            { id : user._id, userName : user.userName},
+            process.env.JWT_SECRET,
+            (err, asyncToken) => {
+                if(err) throw err;
+                console.log(asyncToken);
+                res.status(200).json({ token, user : user});
+            }
+        );
+
+        const { password, ...otherData } = user._doc;
+
+        res.cookie("access_token" ,token 
+            //     ,{
+            //     httpOnly : true ,
+            //     sameSite : true,
+            // }
+            ).status(200)
+            .json(otherData);
+    }catch(err){
+        next(err);
+    }
+});
 
 module.exports = router;

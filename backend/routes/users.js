@@ -4,10 +4,6 @@ const handleError = require('../middleware/error');
 const User = require('../dataModels/User');
 const Tweet = require('../dataModels/Tweets');
 
-
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-
 const verifyToken = require('../middleware/auth');
 
 const router = express.Router();

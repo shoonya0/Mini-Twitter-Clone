@@ -21,7 +21,7 @@ router.get("/find/:id", async (req, res, next) => {
 
 // Update User
 router.put("/:id", verifyToken ,async (req, res, next) => {
-    if(req.params.id === req.body.id){
+    if(req.params.id === req.user.id){
         try{
             // here we are updating the user with the help of id and setting the new data to the user
             const updateUser = await User.findByIdAndUpdate(
@@ -36,7 +36,12 @@ router.put("/:id", verifyToken ,async (req, res, next) => {
                     new: true
                 }
             );
-            res.status(200).json(updateUser);
+
+                // here we are destructuring the password from the user object
+                const { password, ...otherData } = updateUser._doc;
+
+
+            res.status(200).json(otherData);
         }catch(err){
             next(err);
         }
@@ -48,7 +53,7 @@ router.put("/:id", verifyToken ,async (req, res, next) => {
 
 // Delete User
 router.delete("/:id", verifyToken, async (req, res, next) => {
-    if(req.params.id === req.body.id){
+    if(req.params.id === req.user.id){
         try{
             // here we are deleting the user by id
             await User.findByIdAndDelete(req.params.id);
@@ -87,7 +92,7 @@ router.put("/follow/:id", verifyToken, async (req ,res, next) => {
                     following : req.params.id
                 },
             });
-
+            
             // here we are sending the response to the client that the user has been followed
             res.status(200).json("User has been followed...");
         }else{

@@ -10,6 +10,7 @@ const UserSchema = new mongoose.Schema({
         followers : [{ type : Array , ref : 'User' , default : []}],
         following : [{ type : Array , ref : 'User' , default : []}],
         profilePicture : { type : String , default : "" },
+        desc : { type : String , default : "" },
     },{ 
         timestamps : true 
     }
